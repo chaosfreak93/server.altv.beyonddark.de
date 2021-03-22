@@ -7,9 +7,9 @@ using AltV.Net.Enums;
 
 namespace BeyondCore.VehicleStuff
 {
-    public class CarDealer
+    public static class CarDealer
     {
-        public static async void buyCar(IPlayer player, string carName) {
+        public static async void BuyCar(IPlayer player, string carName) {
             player.GetStreamSyncedMetaData("lastVehicle", out IVehicle lastVehicle);
 
             if (lastVehicle != null && lastVehicle.Exists) {
@@ -30,14 +30,14 @@ namespace BeyondCore.VehicleStuff
             await vehicle.SetLockStateAsync(VehicleLockState.Unlocked);
             var numberPlate = MakeNumberPlate(8);
             await vehicle.SetNumberplateTextAsync(numberPlate);
-            Core.Db.AddVehicleToGarage(player, carName, numberPlate, vehicle);
+            Database.AddVehicleToGarage(player, carName, numberPlate, vehicle);
             await player.EmitAsync("setPedIntoVehicle", vehicle);
-            Core.Db.GetGarage(player);
+            Database.GetGarage(player);
         }
 
         private static string MakeNumberPlate(int length) {
             var result = "";
-            var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            const string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             var charactersLength = characters.Length;
 
             for (var i = 0; i < length; i++)

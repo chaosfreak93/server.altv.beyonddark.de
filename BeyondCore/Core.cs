@@ -7,7 +7,6 @@ using AltV.Net.Async;
 using AltV.Net.Data;
 using AltV.Net.Elements.Entities;
 using BeyondCore.VehicleStuff;
-using Newtonsoft.Json.Linq;
 
 namespace BeyondCore
 {
@@ -16,8 +15,8 @@ namespace BeyondCore
         private static Timer _syncDateAndTimer = new(SyncDateAndTimer, null, 0, 300000);
 
         public Core() {
-            Db = new Database();
-            var colShapes = new ColShapes();
+            var unused = new Database();
+            var unused1 = new ColShapes();
             AltAsync.OnPlayerConnect += OnServerPlayerConnect;
             AltAsync.OnPlayerDead += OnServerPlayerDeath;
             AltAsync.OnPlayerDisconnect += OnServerPlayerDisconnect;
@@ -25,7 +24,7 @@ namespace BeyondCore
             AltAsync.OnPlayerLeaveVehicle += OnServerPlayerLeaveVehicle;
             AltAsync.OnPlayerChangeVehicleSeat += OnServerPlayerChangeVehicleSeat;
             AltAsync.OnColShape += ColShapes.OnServerColShape;
-            AltAsync.OnServer<IPlayer, string>("discord:AuthDone", Db.register);
+            AltAsync.OnServer<IPlayer, string>("discord:AuthDone", Database.Login);
             AltAsync.OnClient<IPlayer, IVehicle, int>("setTank", VehicleSystem.SetTank);
             AltAsync.OnClient<IPlayer, IVehicle>("getTank", VehicleSystem.GetTank);
             AltAsync.OnClient<IPlayer, IVehicle>("isEngineRunning", VehicleSystem.IsEngineRunning);
@@ -34,12 +33,10 @@ namespace BeyondCore
             AltAsync.OnClient<IPlayer, IVehicle>("toggleSirenAudio", VehicleSystem.ToggleSirenAudio);
             AltAsync.OnClient<IPlayer, IVehicle, string>("vehicle:RadioChanged", VehicleSystem.RadioChanged);
             AltAsync.OnClient<IPlayer>("radio:GetRadioStations", VehicleSystem.GetRadioStations);
-            AltAsync.OnClient<IPlayer, string>("CarDealer:buyCar", CarDealer.buyCar);
+            AltAsync.OnClient<IPlayer, string>("CarDealer:buyCar", CarDealer.BuyCar);
             AltAsync.OnClient<IPlayer, string>("garage:SpawnVehicle", Garage.SpawnGarageVehicle);
-            AltAsync.OnClient<IPlayer>("getGarage", Db.GetGarage);
+            AltAsync.OnClient<IPlayer>("getGarage", Database.GetGarage);
         }
-
-        public static Database Db { get; private set; }
 
         private static async Task OnServerPlayerConnect(IPlayer player, string reason) {
             if (player.Name == "Player")
@@ -75,7 +72,7 @@ namespace BeyondCore
                     return;
                 }
 
-                Db.UpdatePosition(player);
+                Database.UpdatePosition(player);
 
                 player.GetStreamSyncedMetaData("lastVehicle", out IVehicle lastVehicle);
 
