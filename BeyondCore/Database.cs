@@ -321,8 +321,23 @@ namespace BeyondCore
             await accounts.UpdateOneAsync(filter, update);
         }
 
-        public static void SetVehicleStatus(IPlayer player, uint hash, bool status) {
+        public static async void SetVehicleStatus(IPlayer player, uint hash, bool status) {
+            var database = Db.GetDatabase("altv");
+            var accounts = database.GetCollection<BsonDocument>("accounts");
+            var socialIdFilter = Builders<BsonDocument>.Filter.Eq("socialclub", player.SocialClubId.ToString());
+
+            var account = await accounts.Find(socialIdFilter).FirstAsync();
+            var garage = account["garage"].AsBsonArray;
+
+            foreach (var vehicle in garage) {
+                if (vehicle["hash"].ToString() == hash.ToString()) {
+                    vehicle["parking"] = status;
+                }
+            }
             
+            var update = Builders<BsonDocument>.Update.Set("garage", garage.AsBsonValue);
+
+            await accounts.UpdateOneAsync(socialIdFilter, update);
         }
     }
 }
