@@ -46,10 +46,13 @@ namespace BeyondCore
                 case "Garage":
                 {
                     if (entity is IPlayer player) {
-                        if (state)
+                        if (state) {
                             await player.EmitAsync("Garage:enter", shape.Position);
-                        else
+                            Database.GetGarage(player);
+                        } else {
                             await player.EmitAsync("Garage:leave");
+                            Database.GetGarage(player);
+                        }
                     }
 
                     break;
