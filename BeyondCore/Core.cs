@@ -35,6 +35,7 @@ namespace BeyondCore
             AltAsync.OnClient<IPlayer>("radio:GetRadioStations", VehicleSystem.GetRadioStations);
             AltAsync.OnClient<IPlayer, string>("CarDealer:buyCar", CarDealer.BuyCar);
             AltAsync.OnClient<IPlayer, string>("garage:SpawnVehicle", Garage.SpawnGarageVehicle);
+            AltAsync.OnClient<IPlayer>("garage:RemoveVehicle", Garage.RemoveGarageVehicle);
             AltAsync.OnClient<IPlayer>("getGarage", Database.GetGarage);
         }
 

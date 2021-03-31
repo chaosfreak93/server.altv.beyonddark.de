@@ -110,7 +110,19 @@ namespace BeyondCore.VehicleStuff
             await vehicle.SetModAsync(13, byte.Parse(data["tuning"]["peformance"]["transmission"].ToString()));
             await vehicle.SetModAsync(18, byte.Parse(data["tuning"]["peformance"]["turbo"].ToString()));
         }
-        
-        
+
+        public static async void RemoveGarageVehicle(IPlayer player) {
+            var vehicle = await player.GetStreamSyncedMetaDataAsync<IVehicle>("lastVehicle");
+
+            if (vehicle != null && vehicle.Exists && vehicle.NumberplateText != "ADMIN") {
+                Database.UpdateVehicleData(player, vehicle);
+                await vehicle.RemoveAsync();
+                player.DeleteStreamSyncedMetaData("lastVehicle");
+                Database.GetGarage(player);
+            } else if (vehicle != null && vehicle.Exists && vehicle.NumberplateText == "ADMIN") {
+                await vehicle.RemoveAsync();
+                player.DeleteStreamSyncedMetaData("lastVehicle");
+            }
+        }
     }
 }

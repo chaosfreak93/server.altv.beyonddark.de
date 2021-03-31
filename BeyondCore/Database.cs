@@ -357,5 +357,86 @@ namespace BeyondCore
 
             await accounts.UpdateOneAsync(socialIdFilter, update);
         }
+        
+        public static async void UpdateVehicleData(IPlayer player, IVehicle vehicle) {
+            var database = Db.GetDatabase("altv");
+            var accounts = database.GetCollection<BsonDocument>("accounts");
+            var socialIdFilter = Builders<BsonDocument>.Filter.Eq("socialclub", player.SocialClubId.ToString());
+
+            var account = await accounts.Find(socialIdFilter).FirstAsync();
+            var garage = account["garage"].AsBsonArray;
+            foreach (var garageVehicle in garage) {
+                if (uint.Parse(garageVehicle["hash"].ToString()) == vehicle.Model) {
+                    vehicle.GetStreamSyncedMetaData("tank", out int tank);
+                    garageVehicle["tank"] = tank;
+                    garageVehicle["parking"] = true;
+                    garageVehicle["dirtLevel"] = vehicle.DirtLevel;
+                    garageVehicle["damage"]["bodyAdditionalHealth"] = int.Parse(vehicle.BodyAdditionalHealth.ToString());
+                    garageVehicle["damage"]["bodyHealth"] = int.Parse(vehicle.BodyHealth.ToString());
+                    garageVehicle["damage"]["engineHealth"] = int.Parse(vehicle.EngineHealth.ToString());
+                    garageVehicle["damage"]["petrolTankHealth"] = int.Parse(vehicle.PetrolTankHealth.ToString());
+                    garageVehicle["damage"]["healthDataBase64"] = vehicle.HealthData;
+                    garageVehicle["tuning"]["modkit"] = vehicle.ModKit;
+                    garageVehicle["tuning"]["modkitCount"] = vehicle.ModKitsCount;
+                    garageVehicle["tuning"]["optic"]["customTires"] = vehicle.CustomTires;
+                    garageVehicle["tuning"]["optic"]["dashboardColor"] = vehicle.DashboardColor;
+                    garageVehicle["tuning"]["optic"]["headlightColor"] = vehicle.HeadlightColor;
+                    garageVehicle["tuning"]["optic"]["interiorColor"] = vehicle.InteriorColor;
+                    bool left = false;
+                    bool right = false;
+                    bool top = false;
+                    bool back = false;
+                    vehicle.GetNeonActive(ref left, ref right, ref top, ref back);
+                    garageVehicle["tuning"]["optic"]["neon"] = new BsonDocument { {"left", left}, {"right", right}, {"top", top}, {"back", back} };
+                    garageVehicle["tuning"]["optic"]["neonColor"] = vehicle.NeonColor.ToBsonDocument();
+                    garageVehicle["tuning"]["optic"]["primaryColor"] = vehicle.PrimaryColorRgb.ToBsonDocument();
+                    garageVehicle["tuning"]["optic"]["secondaryColor"] = vehicle.SecondaryColorRgb.ToBsonDocument();
+                    garageVehicle["tuning"]["optic"]["pearlColor"] = vehicle.PearlColor;
+                    garageVehicle["tuning"]["optic"]["tireSmokeColor"] = vehicle.TireSmokeColor.ToBsonDocument();
+                    garageVehicle["tuning"]["optic"]["wheelColor"] = vehicle.WheelColor;
+                    garageVehicle["tuning"]["optic"]["exhaust"] = vehicle.GetMod(4);
+                    garageVehicle["tuning"]["optic"]["frame"] = vehicle.GetMod(5);
+                    garageVehicle["tuning"]["optic"]["grille"] = vehicle.GetMod(6);
+                    garageVehicle["tuning"]["optic"]["roof"] = vehicle.GetMod(10);
+                    garageVehicle["tuning"]["optic"]["horns"] = vehicle.GetMod(14);
+                    garageVehicle["tuning"]["optic"]["customTireSmoke"] = vehicle.GetMod(20);
+                    garageVehicle["tuning"]["optic"]["xenon"] = vehicle.GetMod(22);
+                    garageVehicle["tuning"]["optic"]["door_interior"] = vehicle.GetMod(31);
+                    garageVehicle["tuning"]["optic"]["seats"] = vehicle.GetMod(32);
+                    garageVehicle["tuning"]["optic"]["engine_block"] = vehicle.GetMod(39);
+                    garageVehicle["tuning"]["optic"]["air_filter"] = vehicle.GetMod(40);
+                    garageVehicle["tuning"]["peformance"]["brakes"] = vehicle.GetMod(12);
+                    garageVehicle["tuning"]["peformance"]["engine"] = vehicle.GetMod(11);
+                    garageVehicle["tuning"]["peformance"]["spoiler"] = vehicle.GetMod(0);
+                    garageVehicle["tuning"]["peformance"]["suspension"] = vehicle.GetMod(15);
+                    garageVehicle["tuning"]["peformance"]["transmission"] = vehicle.GetMod(13);
+                    garageVehicle["tuning"]["peformance"]["turbo"] = vehicle.GetMod(18);
+                }
+            }
+
+            var update = Builders<BsonDocument>.Update.Set("garage", garage.AsBsonValue);
+
+            await accounts.UpdateOneAsync(socialIdFilter, update);
+        }
+        
+        public static async void SetAllVehicleParking() {
+            var database = Db.GetDatabase("altv");
+            var accounts = database.GetCollection<BsonDocument>("accounts");
+
+            var account = accounts.Find(new BsonDocument()).ToList();
+
+            foreach (BsonDocument doc in account) {
+                var socialIdFilter = Builders<BsonDocument>.Filter.Eq("socialclub", doc["socialclub"]);
+                var garage = doc["garage"].AsBsonArray;
+                foreach (var vehicle in garage) {
+                    if (vehicle["parking"] == false) {
+                        vehicle["parking"] = true;
+                    }
+                }
+                var update = Builders<BsonDocument>.Update.Set("garage", garage.AsBsonValue);
+
+                await accounts.UpdateOneAsync(socialIdFilter, update);
+            }
+        }
     }
 }
