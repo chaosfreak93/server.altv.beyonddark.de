@@ -47,6 +47,7 @@ namespace BeyondCore
                 await player.EmitAsync("chat:Init");
                 await player.EmitAsync("teleportToLastPosition",
                     new Vector3(-1044.6988525390625f, -2749.6220703125f, 22.3604736328125f));
+                player.Visible = true;
                 await player.SetMetaDataAsync("loggedIn", true);
                 GetGarage(player);
             } else if (discordFound.CountDocumentsAsync().Result > 0 && socialFound.CountDocumentsAsync().Result <= 0) {
@@ -64,6 +65,7 @@ namespace BeyondCore
                 await player.EmitAsync("teleportToLastPosition",
                     new Vector3(float.Parse(pos["x"]?.ToString()), float.Parse(pos["y"]?.ToString()),
                         float.Parse(pos["z"]?.ToString())));
+                player.Visible = true;
                 await player.SetMetaDataAsync("loggedIn", true);
                 GetGarage(player);
             }
