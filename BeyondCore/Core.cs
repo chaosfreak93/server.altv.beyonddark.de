@@ -46,11 +46,12 @@ namespace BeyondCore
 
             AltAsync.Log(player.Name + " hat den Staat beitreten!");
 
-            await player.SpawnAsync(new Position(402.9230651855469f, -996.7911987304688f, -99.0146484375f));
+            await player.SpawnAsync(new Position(4890.94921875f, -4924.7998046875f, 10.3070068359375f));
             await player.SetRotationAsync(new Rotation(0f, 0f, 3.1168558597564697f));
             await player.SetDimensionAsync(player.Id);
             await player.SetDateTimeAsync(DateTime.Now);
             AltAsync.Emit("SaltyChat:EnablePlayer", player);
+            player.Visible = false;
         }
 
         private static async Task OnServerPlayerDeath(IPlayer player, IEntity killer, uint weapon) {
