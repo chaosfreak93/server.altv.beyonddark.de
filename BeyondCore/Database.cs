@@ -272,6 +272,12 @@ namespace BeyondCore
             var account = await accounts.Find(filter).FirstAsync();
             var garage = account["garage"].AsBsonArray;
 
+            bool left = false;
+            bool right = false;
+            bool top = false;
+            bool back = false;
+            vehicle.GetNeonActive(ref left, ref right, ref top, ref back);
+            
             garage.Add(new BsonDocument {
                 {"name", carName},
                 {"hash", vehicle.Model.ToString()},
@@ -295,12 +301,24 @@ namespace BeyondCore
                                 {"dashboardColor", vehicle.DashboardColor},
                                 {"headlightColor", vehicle.HeadlightColor},
                                 {"interiorColor", vehicle.InteriorColor},
-                                {"neonColor", vehicle.NeonColor.ToJson()},
-                                {"primaryColor", vehicle.PrimaryColorRgb.ToJson()},
-                                {"secondaryColor", vehicle.SecondaryColorRgb.ToJson()},
+                                {"neon", new BsonDocument { {"left", left}, {"right", right}, {"top", top}, {"back", back} } },
+                                {"neonColor", vehicle.NeonColor.ToBsonDocument()},
+                                {"primaryColor", vehicle.PrimaryColorRgb.ToBsonDocument()},
+                                {"secondaryColor", vehicle.SecondaryColorRgb.ToBsonDocument()},
                                 {"pearlColor", vehicle.PearlColor},
-                                {"tireSmokeColor", vehicle.TireSmokeColor.ToJson()},
-                                {"wheelColor", vehicle.WheelColor}
+                                {"tireSmokeColor", vehicle.TireSmokeColor.ToBsonDocument()},
+                                {"wheelColor", vehicle.WheelColor},
+                                {"exhaust", vehicle.GetMod(4) },
+                                {"frame", vehicle.GetMod(5) },
+                                {"grille", vehicle.GetMod(6) },
+                                {"roof", vehicle.GetMod(10) },
+                                {"horns", vehicle.GetMod(14) },
+                                {"customTireSmoke", vehicle.GetMod(20) },
+                                {"xenon", vehicle.GetMod(22) },
+                                {"door_interior", vehicle.GetMod(31) },
+                                {"seats", vehicle.GetMod(32) },
+                                {"engine_block", vehicle.GetMod(39) },
+                                {"air_filter", vehicle.GetMod(40) },
                             }
                         }, {
                             "peformance", new BsonDocument {
