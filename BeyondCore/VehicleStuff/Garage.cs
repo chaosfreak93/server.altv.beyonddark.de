@@ -54,6 +54,9 @@ namespace BeyondCore.VehicleStuff
             ApplyOpticTunings(vehicle, data[0]);
             ApplyPeformanceTunings(vehicle, data[0]);
 
+            Database.SetVehicleStatus(player, uint.Parse(data[0]["hash"].ToString()), false);
+            vehicle.Visible = true;
+            
             await player.EmitAsync("setPedIntoVehicle", vehicle);
             Database.GetGarage(player);
         }
