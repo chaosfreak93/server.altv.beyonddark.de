@@ -77,8 +77,11 @@ namespace BeyondCore
 
                 player.GetStreamSyncedMetaData("lastVehicle", out IVehicle lastVehicle);
 
-                if (lastVehicle != null && lastVehicle.Exists)
+                if (lastVehicle != null && lastVehicle.Exists) {
+                    if (lastVehicle.NumberplateText != "ADMIN")
+                        Database.UpdateVehicleData(player, lastVehicle);
                     lastVehicle.Remove();
+                }
 
                 AltAsync.Log(player.Name + " hat den Staat verlassen!");
             }
