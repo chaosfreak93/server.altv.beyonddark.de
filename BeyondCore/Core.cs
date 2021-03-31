@@ -37,6 +37,7 @@ namespace BeyondCore
             AltAsync.OnClient<IPlayer, string>("garage:SpawnVehicle", Garage.SpawnGarageVehicle);
             AltAsync.OnClient<IPlayer>("garage:RemoveVehicle", Garage.RemoveGarageVehicle);
             AltAsync.OnClient<IPlayer>("getGarage", Database.GetGarage);
+            AltAsync.Do(Database.SetAllVehicleParking);
         }
 
         private static async Task OnServerPlayerConnect(IPlayer player, string reason) {
